@@ -1,0 +1,22 @@
+name: CI-CD-Completo
+on: [push]
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - run: npm install
+      - run: npx playwright install --with-deps
+      - name: Ejecutar Pruebas en Paralelo
+        run: |
+          npx playwright test tests/web.spec.js &
+          npx jest tests/api.test.js
+      - name: Subir Artefactos
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: evidencias
+          path: playwright-report/
